@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { UserPlus, Mail, Lock, User, MapPin } from 'lucide-react'
+import LocationPicker from '../components/LocationPicker'
 
 const Signup = () => {
   const [searchParams] = useSearchParams()
@@ -14,10 +15,13 @@ const Signup = () => {
     confirmPassword: '',
     role: defaultRole,
     location: '',
-    description: ''
+    description: '',
+    latitude: null,
+    longitude: null
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showLocationPicker, setShowLocationPicker] = useState(false)
   
   const { signUp } = useAuth()
   const navigate = useNavigate()
@@ -26,6 +30,15 @@ const Signup = () => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
+    })
+  }
+
+  const handleLocationSelect = (locationData) => {
+    setFormData({
+      ...formData,
+      latitude: locationData.latitude,
+      longitude: locationData.longitude,
+      location: locationData.address || formData.location
     })
   }
 
@@ -51,7 +64,9 @@ const Signup = () => {
         name: formData.name,
         role: formData.role,
         location: formData.location,
-        description: formData.description || null
+        description: formData.description || null,
+        latitude: formData.latitude,
+        longitude: formData.longitude
       }
 
       await signUp(formData.email, formData.password, userData)
@@ -158,6 +173,34 @@ const Signup = () => {
                   placeholder="City, State"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Set Location on Map
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowLocationPicker(!showLocationPicker)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left flex items-center justify-between"
+              >
+                <span className="text-gray-600">
+                  {formData.latitude && formData.longitude 
+                    ? `Location set (${formData.latitude.toFixed(4)}, ${formData.longitude.toFixed(4)})` 
+                    : 'Click to set your location on map'
+                  }
+                </span>
+                <MapPin className="w-4 h-4 text-gray-400" />
+              </button>
+              
+              {showLocationPicker && (
+                <div className="mt-3">
+                  <LocationPicker 
+                    onLocationSelect={handleLocationSelect}
+                    initialPosition={formData.latitude && formData.longitude ? [formData.latitude, formData.longitude] : null}
+                  />
+                </div>
+              )}
             </div>
 
             {formData.role === 'artisan' && (
