@@ -1,9 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { LogOut, User, ShoppingBag, Package } from 'lucide-react'
+import { LogOut, User, ShoppingBag, Package, Plus } from 'lucide-react'
 
 const Navbar = () => {
-  const { user, signOut } = useAuth()
+  const { user, userProfile, signOut } = useAuth()
   const navigate = useNavigate()
 
   const handleSignOut = async () => {
@@ -25,14 +25,24 @@ const Navbar = () => {
           </Link>
 
           <div className="flex items-center space-x-6">
+            <Link 
+              to="/marketplace" 
+              className="text-gray-600 hover:text-primary-600 transition-colors"
+            >
+              Marketplace
+            </Link>
+            
             {user ? (
               <>
-                <Link 
-                  to="/marketplace" 
-                  className="text-gray-600 hover:text-primary-600 transition-colors"
-                >
-                  Marketplace
-                </Link>
+                {userProfile?.role === 'artisan' && (
+                  <Link 
+                    to="/my-products" 
+                    className="text-gray-600 hover:text-primary-600 transition-colors flex items-center space-x-1"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>My Products</span>
+                  </Link>
+                )}
                 <Link 
                   to="/orders" 
                   className="text-gray-600 hover:text-primary-600 transition-colors flex items-center space-x-1"
@@ -57,12 +67,6 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link 
-                  to="/marketplace" 
-                  className="text-gray-600 hover:text-primary-600 transition-colors"
-                >
-                  Marketplace
-                </Link>
                 <Link 
                   to="/login" 
                   className="text-gray-600 hover:text-primary-600 transition-colors"

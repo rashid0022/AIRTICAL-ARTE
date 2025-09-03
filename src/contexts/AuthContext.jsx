@@ -13,25 +13,52 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
+  const [userProfile, setUserProfile] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
-      setLoading(false)
+      if (session?.user) {
+        fetchUserProfile(session.user.id)
+      } else {
+        setLoading(false)
+      }
     })
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setUser(session?.user ?? null)
-        setLoading(false)
+        if (session?.user) {
+          await fetchUserProfile(session.user.id)
+        } else {
+          setUserProfile(null)
+          setLoading(false)
+        }
       }
     )
 
     return () => subscription.unsubscribe()
   }, [])
+
+  const fetchUserProfile = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single()
+
+      if (error) throw error
+      setUserProfile(data)
+    } catch (error) {
+      console.error('Error fetching user profile:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const signUp = async (email, password, userData) => {
     const { data, error } = await supabase.auth.signUp({
@@ -72,26 +99,17 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
-  }
-
-  const getUserProfile = async (userId) => {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userId)
-      .single()
-
-    if (error) throw error
-    return data
+    setUserProfile(null)
   }
 
   const value = {
     user,
+    userProfile,
     loading,
     signUp,
     signIn,
     signOut,
-    getUserProfile
+    fetchUserProfile
   }
 
   return (

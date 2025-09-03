@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Hammer, Users, ShoppingBag, Star } from 'lucide-react'
+import { Hammer, Users, ShoppingBag, Star, ArrowRight } from 'lucide-react'
 
 const Home = () => {
   const { user } = useAuth()
@@ -20,13 +20,14 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
               to="/marketplace" 
-              className="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors"
+              className="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center space-x-2"
             >
-              Browse Marketplace
+              <span>Browse Marketplace</span>
+              <ArrowRight className="w-5 h-5" />
             </Link>
             {!user && (
               <Link 
-                to="/signup" 
+                to="/signup?role=artisan" 
                 className="border-2 border-primary-600 text-primary-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-50 transition-colors"
               >
                 Join as Artisan
@@ -43,7 +44,7 @@ const Home = () => {
             Why Choose ArtisanHub?
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+            <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
               <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Hammer className="w-8 h-8 text-primary-600" />
               </div>
@@ -52,7 +53,7 @@ const Home = () => {
                 Connect with verified local craftspeople who take pride in their work and deliver exceptional quality.
               </p>
             </div>
-            <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+            <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
               <div className="w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-secondary-600" />
               </div>
@@ -61,7 +62,7 @@ const Home = () => {
                 Support your local economy while building relationships with talented artisans in your area.
               </p>
             </div>
-            <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+            <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Star className="w-8 h-8 text-green-600" />
               </div>
