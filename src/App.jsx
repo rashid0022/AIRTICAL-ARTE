@@ -9,6 +9,7 @@ import Marketplace from './pages/Marketplace'
 import MyProducts from './pages/MyProducts'
 import Orders from './pages/Orders'
 import Profile from './pages/Profile'
+import ArtisanMap from './pages/ArtisanMap'
 import './index.css'
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="login" element={<Login />} />
             <Route path="signup" element={<Signup />} />
             <Route path="marketplace" element={<Marketplace />} />
+            <Route path="map" element={<ArtisanMap />} />
             <Route 
               path="my-products" 
               element={

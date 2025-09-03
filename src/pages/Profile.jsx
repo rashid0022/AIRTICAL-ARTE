@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { User, MapPin, Mail, Edit, Save, X } from 'lucide-react'
+import LocationPicker from '../components/LocationPicker'
 
 const Profile = () => {
   const { user, userProfile, fetchUserProfile } = useAuth()
@@ -9,19 +10,33 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     name: '',
     location: '',
-    description: ''
+    description: '',
+    latitude: null,
+    longitude: null
   })
   const [loading, setLoading] = useState(false)
+  const [showLocationPicker, setShowLocationPicker] = useState(false)
 
   useEffect(() => {
     if (userProfile) {
       setFormData({
         name: userProfile.name || '',
         location: userProfile.location || '',
-        description: userProfile.description || ''
+        description: userProfile.description || '',
+        latitude: userProfile.latitude || null,
+        longitude: userProfile.longitude || null
       })
     }
   }, [userProfile])
+
+  const handleLocationSelect = (locationData) => {
+    setFormData({
+      ...formData,
+      latitude: locationData.latitude,
+      longitude: locationData.longitude,
+      location: locationData.address || formData.location
+    })
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -49,7 +64,9 @@ const Profile = () => {
     setFormData({
       name: userProfile?.name || '',
       location: userProfile?.location || '',
-      description: userProfile?.description || ''
+      description: userProfile?.description || '',
+      latitude: userProfile?.latitude || null,
+      longitude: userProfile?.longitude || null
     })
     setEditing(false)
   }
@@ -128,6 +145,34 @@ const Profile = () => {
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Update Location on Map
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowLocationPicker(!showLocationPicker)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left flex items-center justify-between"
+                >
+                  <span className="text-gray-600">
+                    {formData.latitude && formData.longitude 
+                      ? `Location set (${formData.latitude.toFixed(4)}, ${formData.longitude.toFixed(4)})` 
+                      : 'Click to set your location on map'
+                    }
+                  </span>
+                  <MapPin className="w-4 h-4 text-gray-400" />
+                </button>
+                
+                {showLocationPicker && (
+                  <div className="mt-3">
+                    <LocationPicker 
+                      onLocationSelect={handleLocationSelect}
+                      initialPosition={formData.latitude && formData.longitude ? [formData.latitude, formData.longitude] : null}
+                    />
+                  </div>
+                )}
               </div>
 
               {userProfile.role === 'artisan' && (
